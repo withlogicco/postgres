@@ -1,0 +1,1 @@
+postgres:TEXT${POSTGRES_PASSWORD}

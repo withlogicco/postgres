@@ -1,0 +1,51 @@
+x-base:
+  &base
+  secrets:
+    - postgres-password
+    - replicator-password
+  environment:
+    POSTGRES_PASSWORD_FILE: /run/secrets/postgres-password
+    POSTGRES_CIDR: ${POSTGRES_CIDR:-172.54.32.0/24}
+  command: ["postgres", "-c", "log_statement=all"]
+
+services:
+  primary:
+    <<: *base
+    build:
+      context: postgres
+      target: primary
+    volumes:
+      - primary_data:/var/lib/postgresql/data
+
+  secondary:
+    <<: *base
+    build:
+      context: postgres
+      target: secondary
+    restart: on-failure:3
+    volumes:
+      - secondary_data:/var/lib/postgresql/data
+
+  pgpool2:
+    build:
+      context: pgpool2
+    secrets:
+      - postgres-password
+
+secrets:
+  postgres-password:
+   file: dev/secrets/postgres-password
+  replicator-password:
+   file: dev/secrets/replicator-password
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: ${POSTGRES_SUBNET:-172.54.0.0/16}
+          ip_range: ${POSTGRES_CIDR:-172.54.32.0/24}
+          gateway: ${POSTGRES_GATEWAY:-172.54.32.254}
+
+volumes:
+  primary_data:
+  secondary_data:
