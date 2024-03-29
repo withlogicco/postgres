@@ -21,6 +21,13 @@ The setup of Postgres with LOGIC is configured with environment variables and Do
 
 For convenience, in development these environment variables can be set in a `.env` environment file. Example file available in [`.example.env`](./.example.env)
 
+### Secrets
+
+- `postgres-password`: The password for the `postgres` user of the database used for most database operations
+- `replicator-password`: The password for the `replicator` role, used from the secondary server to replicate data
+
+For convenience, in development all secrets are hardcoded as files and are available in the [`dev/secrets`](./dev/secrets) directory and do not need to be set.
+
 ## Development
 
 To kick off and evaluate the setup locally, all you have to do is run
