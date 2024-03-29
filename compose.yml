@@ -1,18 +1,18 @@
 x-base:
   &base
-    secrets:
-      - postgres-password
-      - replicator-password
-    environment:
-      POSTGRES_PASSWORD_FILE: /run/secrets/postgres-password
-      POSTGRES_CIDR: ${POSTGRES_CIDR:-172.54.32.0/24}
-    command: ["postgres", "-c", "log_statement=all"]
+  secrets:
+    - postgres-password
+    - replicator-password
+  environment:
+    POSTGRES_PASSWORD_FILE: /run/secrets/postgres-password
+    POSTGRES_CIDR: ${POSTGRES_CIDR:-172.54.32.0/24}
+  command: ["postgres", "-c", "log_statement=all"]
 
 services:
   primary:
     <<: *base
     build:
-      context: .
+      context: postgres
       target: primary
     volumes:
       - primary_data:/var/lib/postgresql/data
@@ -20,11 +20,17 @@ services:
   secondary:
     <<: *base
     build:
-      context: .
+      context: postgres
       target: secondary
     restart: on-failure:3
     volumes:
       - secondary_data:/var/lib/postgresql/data
+
+  pgpool2:
+    build:
+      context: pgpool2
+    secrets:
+      - postgres-password
 
 secrets:
   postgres-password:
