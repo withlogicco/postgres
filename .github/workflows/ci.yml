@@ -7,11 +7,12 @@ permissions:
   pull-requests: write
   packages: write
 
+env:
+  COMPOSE_EXPERIMENTAL_OCI_REMOTE: "1"
+
 jobs:
   publish:
     runs-on: ubuntu-latest
-    env:
-      COMPOSE_EXPERIMENTAL_OCI_REMOTE: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3
@@ -20,14 +21,17 @@ jobs:
             registry: ghcr.io
             username: ${{ github.repository_owner }}
             password: ${{ secrets.GITHUB_TOKEN }}
-      - run: docker compose build --push
-      - run: docker compose alpha publish ghcr.io/withlogicco/postgres
+      - run: |
+          wget https://github.com/docker/compose/releases/download/v2.30.3/docker-compose-linux-x86_64
+          mv docker-compose-linux-x86_64 compose-v2.30
+          chmod +x compose-v2.30
+          mv compose-v2.30 /usr/local/bin
+      - run: compose-v2.30 build --push
+      - run: compose-v2.30 alpha publish ghcr.io/withlogicco/postgres:${{ github.sha }}
 
   config:
     needs: publish
     runs-on: ubuntu-latest
-    env:
-      COMPOSE_EXPERIMENTAL_OCI_REMOTE: "1"
     steps:
       - uses: actions/checkout@v4
       - run: docker info
