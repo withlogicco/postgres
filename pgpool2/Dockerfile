@@ -1,4 +1,4 @@
-FROM ubuntu:22.04 as pgpool
+FROM ubuntu:22.04 AS pgpool
 
 # https://www.pgpool.net/mediawiki/index.php/Apt_Repository
 

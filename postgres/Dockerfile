@@ -1,14 +1,14 @@
-FROM postgres:16.2 as base
+FROM postgres:16.2 AS base
 
 
-FROM base as primary
+FROM base AS primary
 
-COPY ./postgres/primary/docker-entrypoint-initdb.d/ docker-entrypoint-initdb.d/
+COPY ./primary/docker-entrypoint-initdb.d/ docker-entrypoint-initdb.d/
 
 
-FROM base as secondary
+FROM base AS secondary
 
-COPY ./postgres/secondary/bin/ /usr/local/bin/
+COPY ./secondary/bin/ /usr/local/bin/
 ENTRYPOINT [ "docker-entrypoint-override.sh" ]
 
 CMD ["postgres"]

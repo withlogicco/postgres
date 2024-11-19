@@ -11,6 +11,7 @@ x-base:
 services:
   primary:
     <<: *base
+    image: ghcr.io/withlogicco/postgres/primary:${DOCKER_IMAGE_TAG:-latest}
     build:
       context: postgres
       target: primary
@@ -19,6 +20,7 @@ services:
 
   secondary:
     <<: *base
+    image: ghcr.io/withlogicco/postgres/secondary:${DOCKER_IMAGE_TAG:-latest}
     build:
       context: postgres
       target: secondary
@@ -27,6 +29,7 @@ services:
       - secondary_data:/var/lib/postgresql/data
 
   pgpool2:
+    image: ghcr.io/withlogicco/postgres/pgpool2:${DOCKER_IMAGE_TAG:-latest}
     build:
       context: pgpool2
     secrets:
