@@ -1,0 +1,26 @@
+on: push
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+            registry: ghcr.io
+            username: ${{ github.repository_owner }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+      - run: docker compose alpha publish ghcr.io/withlogicco/postgres
+
+  config:
+    needs: publish
+    runs-on: ubuntu-latest
+    env:
+      COMPOSE_EXPERIMENTAL_OCI_REMOTE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker info
+      - run: docker compose version
+      - run: docker compose config --no-normalize
+      - run: docker compose alpha viz --image --indentation-size=4 --networks --ports --spaces
