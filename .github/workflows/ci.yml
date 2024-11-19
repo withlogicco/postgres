@@ -9,6 +9,7 @@ permissions:
 
 env:
   COMPOSE_EXPERIMENTAL_OCI_REMOTE: "1"
+  DOCKER_IMAGE_TAG: ${{ github.sha }}
 
 jobs:
   publish:
